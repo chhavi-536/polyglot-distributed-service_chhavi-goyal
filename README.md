@@ -1,96 +1,98 @@
-Distributed SMS Processing System
+# Distributed SMS Processing System
 
-A distributed microservices-based SMS processing platform built using Spring Boot, GoLang, Kafka, Redis, and MongoDB. The system validates blocked users, processes SMS requests asynchronously through Kafka, and stores SMS records reliably in MongoDB.
+## Overview
 
-Project Structure
-distributed-sms-system/
-├── sms-sender/                 # Spring Boot SMS Sender Service (Port 8080)
-│   ├── src/main/java/
-│   ├── src/main/resources/
-│   └── pom.xml
-│
-├── sms-store/                  # GoLang SMS Store Service
-│   ├── main.go
-│   ├── consumer/
-│   └── go.mod
-│
-├── docker-compose.yml          # Kafka, Zookeeper, Redis, MongoDB setup
-├── docs/                       # Documentation files
-│   └── architecture.md
-└── README.md
-System Architecture
-Components
-1. SMS Sender Service (Spring Boot)
+This project implements a distributed SMS processing system using:
+
+- Java Spring Boot (SMS Sender Service)
+- GoLang (SMS Store Service)
+- Kafka for asynchronous communication
+- Redis for blocked-user validation
+- MongoDB for persistent storage
+- Docker for infrastructure services
+
+---
+
+## Architecture
+
+### Components
+
+### 1. SMS Sender Service (Spring Boot)
 
 Responsibilities:
+- Exposes SMS sending API
+- Validates blocked phone numbers using Redis
+- Simulates third-party SMS vendor
+- Publishes SMS events to Kafka
 
-Exposes REST API for sending SMS
-Validates blocked users using Redis
-Simulates third-party SMS vendor call
-Publishes SMS events to Kafka
-2. SMS Store Service (GoLang)
+### 2. SMS Store Service (GoLang)
 
 Responsibilities:
+- Consumes Kafka events
+- Stores SMS data into MongoDB
+- Provides logs for successful persistence
 
-Consumes Kafka SMS events
-Stores SMS data into MongoDB
-Logs successful persistence events
-3. Infrastructure Services
-Kafka → Asynchronous message broker
-Zookeeper → Kafka dependency
-Redis → Blocked-user validation
-MongoDB → Persistent SMS storage
-Docker → Containerized infrastructure
-Quick Start
-Start Docker Infrastructure
+---
+
+## Run the Project
+
+### 1. Start Docker Services
+
+```bash
 docker-compose up -d
+```
 
-This starts:
+### 2. Run GoLang SMS Store Service
 
-Kafka
-Zookeeper
-Redis
-MongoDB
-Run Services
-Start GoLang SMS Store Service
+```bash
 cd sms-store
 go run main.go
-Start Spring Boot SMS Sender Service
+```
+
+### 3. Run Spring Boot SMS Sender Service
+
+```bash
 cd sms-sender
 mvn spring-boot:run
-Redis Blocked User Setup
+```
 
-Open Redis CLI:
+---
 
+## Redis Setup
+
+```bash
 docker exec -it redis redis-cli
-
-Add a blocked phone number:
-
 SET 9876543210 blocked
-API Endpoint
-Send SMS
+```
 
-Endpoint
+---
 
+## API Endpoint
+
+### Send SMS
+
+```http
 POST http://localhost:8080/v1/sms/send
-Request Body
+```
+
+### Request Body
+
+```json
 {
   "phoneNumber": "9999999999",
   "message": "Hello from SMS system"
 }
-Workflow
-User sends SMS request to Spring Boot service
-Service checks blocked users in Redis
-If valid:
-Simulates external SMS vendor API call
-Publishes SMS event to Kafka
-GoLang consumer reads Kafka event
-SMS data gets stored in MongoDB
-Features
-Distributed Microservices Architecture
-Asynchronous Kafka Communication
-Redis-based User Blocking
-MongoDB Persistent Storage
-Dockerized Infrastructure
-Scalable Event-driven Design
-Fault Isolation Between Services
+```
+
+---
+
+## Technologies Used
+
+| Technology | Purpose |
+|------------|---------|
+| Spring Boot | SMS Sender Service |
+| GoLang | Kafka Consumer |
+| Kafka | Message Broker |
+| Redis | Blocked User Validation |
+| MongoDB | Persistent Storage |
+| Docker | Infrastructure |
